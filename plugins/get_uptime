@@ -29,7 +29,9 @@ previous_uptime_days=$(( previous_highest_uptime/60/60%24 ))
 
 echo "XiaoMi MiWiFi 3G"
 echo "Current highest uptime: $highest_uptime_days days, $highest_uptime_hours hours, $highest_uptime_minutes minutes, $current_highest_uptime seconds"
-if [ -z "$current_highest_uptime" ]
+if [ -z "$previous_highest_uptime" ]
 then
+
+else
   echo "Previous highest uptime: $previous_uptime_days days, $previous_uptime_hours hours, $previous_uptime_minutes minutes, $previous_highest_uptime seconds"
 fi
