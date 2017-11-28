@@ -1,3 +1,34 @@
 #!/bin/sh
+# uptime.sh
+# get uptime from /proc/uptime
 
-uptime
+uptime=$(</proc/uptime)
+uptime=${uptime%%.*}
+
+seconds=$(( uptime%60 ))
+minutes=$(( uptime/60%60 ))
+hours=$(( uptime/60/60%24 ))
+days=$(( uptime/60/60/24 ))
+
+if [ -z "$current_highest_uptime" ]
+then
+      current_highest_uptime = $(( uptime%60 ))
+else
+      if [ "$(( uptime%60 ))" -gt "$current_highest_uptime" ]; then
+          previous_highest_time = $current_highest_uptime
+          current_highest_uptime = $(( uptime%60 ))
+      fi
+fi
+
+highest_uptime_minutes=$(( current_highest_uptime%60 ))
+highest_uptime_hours=$(( current_highest_uptime/60%60 ))
+highest_uptime_days=$(( current_highest_uptime/60/60%24 ))
+previous_uptime_minutes=$(( previous_highest_uptime%60 ))
+previous_uptime_hours=$(( previous_highest_uptime/60%60 ))
+previous_uptime_days=$(( previous_highest_uptime/60/60%24 ))
+
+echo "Current highest uptime: $highest_uptime_days days, $highest_uptime_hours hours, $highest_uptime_minutes minutes, $current_highest_uptime seconds"
+if [ -z "$current_highest_uptime" ]
+then
+  echo "Previous highest uptime: $previous_uptime_days days, $previous_uptime_hours hours, $previous_uptime_minutes minutes, $previous_highest_uptime seconds"
+fi
