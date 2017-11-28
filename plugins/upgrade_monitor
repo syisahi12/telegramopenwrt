@@ -1,0 +1,22 @@
+#!/bin/sh
+
+ip=$(ifconfig eth0.2 | grep inet | grep -v inet6 | awk '{print $2}' | awk -F : '{print "*IP:* " $2}')
+
+if [ -z "$current_ip" ]
+then
+      current_ip = $ip
+else
+      if [ "$ip" != "$current_ip" ]; then
+          previous_ip = $current_ip
+          current_ip = $ip
+      fi
+fi
+
+echo "XiaoMi MiWiFi 3G"
+echo "Current UniFi IP: $current_ip"
+if [ -z "$previous_ip" ]; 
+then
+
+else 
+  echo "Previous UniFi IP: $previous_ip"
+fi
