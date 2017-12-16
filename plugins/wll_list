@@ -3,9 +3,9 @@
 for wifi in wlan0 wlan1
 do
 	if [ "${wifi}" == "wlan0" ]; then
-		echo -en "-----------------*${wifi} - 2.4 Ghz*-----------------------\n"
+		echo -en "---*${wifi} - 2.4 Ghz*---\n"
 	else
-		echo -en "-----------------*${wifi} - 5 Ghz*-------------------------\n"
+		echo -en "---*${wifi} - 5 Ghz*---\n"
 	fi
 	macaddr=$(iw dev ${wifi} station dump | grep Station | grep -oE "([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}" | awk '{printf $0 " "}')
 	for lease in ${macaddr}
