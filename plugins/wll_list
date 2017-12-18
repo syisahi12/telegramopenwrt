@@ -1,0 +1,37 @@
+#!/bin/sh
+
+source /root/variables
+
+echo "${model}"
+echo "${version}"
+./get_date
+printf "\n"
+for wifi in wlan0 wlan1
+do
+	if [ "${wifi}" == "wlan0" ]; then
+		echo -en "*2.4 GHz WiFi (${wifi})*\n"
+	else
+		echo -en "*5 GHz WiFi (${wifi})*\n"
+	fi
+	macaddr=$(iw dev ${wifi} station dump | grep Station | grep -oE "([[:xdigit:]]{1,2}:){5}[[:xdigit:]]{1,2}" | awk '{printf $0 " "}')
+	for lease in ${macaddr}
+	do		
+		speed=$(iw dev ${wifi} station get ${lease} | grep Mbps | awk '{print $3}' | cut -d 'M' -f 1)
+		signal=$(iw dev ${wifi} station get ${lease} | grep signal: | awk '{print $2}')
+		line=$(cat /tmp/dhcp.leases | grep ${lease})
+		if [ $? == 0 ]; then
+			echo "${line}" | awk '{gsub( "*","\\*" ); gsub( "_","\\_" ); printf "_" $4"_""\n*IP Assigned:* " $3  "\n*MAC Address*: " toupper($2) "\n*State:* ";system("./get_ping "$4" 1");printf "\n"}'
+			printf "*Link Speed:* "$speed
+			printf " Mbps\n"
+			printf "*Signal Strength:* "$signal
+			printf " dBm\n"
+		else
+			cat /proc/net/arp | grep ${lease} | awk '{gsub( "_","\\_" ); printf "IP: " ${speed} "\nMac: " toupper($4) "\nState: ";system("./get_ping "$1" 1");printf "\n"}'
+		fi
+		string=$(./get_mac ${lease} | cut -d':' -f2)
+		printf "*Organization:* "
+		echo $string;
+		echo -en "\n"
+	done
+	#echo -en "-----------------------------------------------------------\n"
+done

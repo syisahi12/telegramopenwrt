@@ -1,0 +1,1 @@
+*Arg* Delete given hostname in firewall, if no hostname is provided, all rules created by this bot will be removed.

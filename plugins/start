@@ -1,0 +1,9 @@
+#!/bin/sh
+
+echo -en "Hi, I can help you to manage and get information about your OpenWRT Router.\nHere are the available commands:\n\n"
+ALLPLUGINS=$(ls -1 -p | grep -v "/")
+for plug in $ALLPLUGINS
+do
+help=$(cat "help/${plug}")
+echo "[/${plug}](/${plug}) - ${help}"
+done

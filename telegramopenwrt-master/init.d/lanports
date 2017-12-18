@@ -1,0 +1,22 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2006-2011 OpenWrt.org
+
+START=95
+STOP=15
+
+USE_PROCD=1
+PROG=/root/lanports
+
+start_service () {
+	service_start ${PROG}
+}
+
+stop_service() {
+	kill $(pgrep -f lanports)
+}
+
+restart(){      
+        stop_service    
+        sleep 1 
+        start_service   
+} 

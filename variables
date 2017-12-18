@@ -1,0 +1,13 @@
+key='426294861:AAEPnF2HyRrwnJXyLQDEeBCJ4x_6GytbQ1Y'
+api="https://api.telegram.org/bot$key"
+my_chat_id='241263558'
+header_auth='[HEADER AUTH]'
+ipaddr='[CAMERA IP OR HOSTNAME]' 
+user='[CAMERA USER]'
+passwd='[CAMERA PASSWD]'
+From='[MAIL FROM]'
+To='[MAIL TO]'
+model="XiaoMi MiWiFi 3G"
+version=$(/root/plugins/get_version)
+previous_ip="202.188.203.167"
+current_ip="118.100.95.111"

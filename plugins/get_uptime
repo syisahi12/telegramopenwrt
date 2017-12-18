@@ -1,0 +1,137 @@
+#!/bin/sh
+
+secs=$(ifstatus wan | grep uptime | cut -d ' ' -f 2 | cut -d ',' -f 1)
+weeks=$((secs/604800))
+days=$((secs/86400))
+hours=$(($secs%86400/3600))
+minutes=$(($secs%3600/60))
+seconds=$(($secs%60))
+
+if [ "$weeks" -gt 0 ]; then
+
+    if [ "$weeks" -gt 1 ]; then
+
+        weeks_string="Weeks"
+
+    else 
+
+        weeks_string="Week"
+
+    fi
+
+else 
+
+    week_string=""
+    weeks=""
+
+fi
+
+if [ "$days" -gt 0 ]; then
+
+    if [ "$days" -gt 1 ]; then
+
+        days_string="Days"
+
+    else 
+
+        days_string="Day"
+
+    fi
+
+else 
+
+    days_string=""
+    days=""
+
+fi
+
+if [ "$hours" -gt 0 ]; then
+
+    if [ "$hours" -gt 1 ]; then
+
+        hours_string="Hours"
+
+    else 
+
+        hours_string="Hour"
+
+    fi
+
+else 
+
+    hours_string=""
+    hours=""
+
+fi
+
+if [ "$minutes" -gt 0 ]; then
+
+    if [ "$minutes" -gt 1 ]; then
+
+        minutes_string="Minutes"
+
+    else 
+
+        minutes_string="Minute"
+
+    fi
+
+else 
+
+    minutes_string=""
+    minutes=""
+
+fi
+
+if [ "$seconds" -gt 0 ]; then
+
+    if [ "$seconds" -gt 1 ]; then
+
+        seconds_string="Seconds"
+
+    else 
+
+        seconds_string="Second"
+
+    fi
+
+else 
+
+    seconds_string=""
+
+fi
+
+if [ -z "$weeks" ]; then
+	printf ""
+else
+	printf $weeks" "
+	printf $weeks_string" "
+fi
+
+if [ -z "$days" ]; then
+	printf ""
+else
+	printf $days" "
+	printf $days_string" "
+fi
+
+if [ -z "$hours" ]; then
+	printf ""
+else
+	printf $hours" "
+	printf $hours_string" "
+fi
+
+if [ -z "$minutes" ]; then
+	printf ""
+else
+	printf ${minutes}" "
+	printf ${minutes_string}" "
+fi
+
+if [ -z "$seconds" ]; then
+        printf ""
+else
+	printf $seconds" "
+	printf $seconds_string"\n"
+fi

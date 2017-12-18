@@ -1,0 +1,71 @@
+#!/bin/sh
+
+source /root/variables
+
+echo "${model}"
+echo "${version}"
+./get_date
+printf "\n"
+echo "*Ports*"
+IFS=$'\n'
+PORTS=$(swconfig dev switch0 show | grep link)
+for port in $PORTS
+do
+	id=$(echo $port | grep -oE "port:[[:digit:]]" | cut -d ':' -f 2)
+	speed=$(echo $port | cut -d ':' -f 5)
+	speedfinal=$(echo $speed | cut -d ' ' -f 1 | tr -dc '0-9' )
+	duplex=$(echo $speed | cut -d ' ' -f 2 | awk '{print toupper(substr($0,0,1))tolower(substr($0,2))}')
+	link=$(echo $port | cut -d ':' -f 4)
+	linkfinal=$(echo $link | cut -d ' ' -f 1 | awk '{print toupper(substr($0,0,1))tolower(substr($0,2))}')
+		
+	if [ "$id" == "1" ]
+		then
+		echo "_WAN_"
+		echo "*Port No:*" $id
+		echo "*State:*" "${linkfinal}"
+		if [ -z "$speed" ]
+                then
+                        echo ""
+                else
+                        echo "*Link Speed:*" $speedfinal "Mbps" $duplex
+                        printf "\n"
+                fi
+	elif [ "$id" == "3" ]
+		then
+		echo "_LAN 1 - TP-Link Archer C1200_"
+		echo "*Port No:*" $id
+		echo "*State:*" "${linkfinal}"
+                if [ -z "$speed" ]
+                then
+                        echo ""
+                else
+                        echo "*Link Speed:*" $speedfinal "Mbps" $duplex
+                        printf "\n"
+                fi
+	elif [ "$id" == "2" ]
+		then
+		echo "_LAN 2 - HyppTV IPTV STB_"
+		echo "*Port No:*" $id
+		echo "*State:*" "${linkfinal}"
+		if [ -z "$speed" ]
+		then
+			echo ""
+		else
+                	echo "*Link Speed:*" $speedfinal "Mbps" $duplex
+			printf "\n"
+		fi
+	elif [ "$id" == "6" ]
+		then
+		echo "_CPU (eth0)_"
+		echo "*Port No:*" $id
+		echo "*State:*" "${linkfinal}"
+                if [ -z "$speed" ]
+                then
+                        echo ""
+                else
+                        echo "*Link Speed:*" $speedfinal "Mbps" $duplex
+                        printf "\n"
+                fi
+	fi
+done
+

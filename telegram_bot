@@ -1,0 +1,87 @@
+#!/bin/sh
+{
+PATH='/usr/bin:/usr/sbin:/bin:/sbin'
+
+source /root/variables
+
+touch  /tmp/bot_vars.sh
+path="/root"
+plugins="${path}/plugins"
+actions="${plugins}/actions"
+command_not_found="Sorry,
+I only recognize *commands*.
+Commands are words beginning with a slash.
+Try it !
+Send [/start](/start) to get my commands list."
+
+while [ true ]
+do 
+	source /tmp/bot_vars.sh
+	offset=$(($offset+1))
+	status=0
+	updates=$(curl -s -k -X GET $api/getUpdates?offset=$offset)
+	status=$(jsonfilter -s "$updates" -e $.ok)
+	if [ $status = 'true' ]; then
+		update_ids=$(jsonfilter -s "$updates" -e $.result[*].update_id)
+	
+		for update_id in $update_ids
+		do
+			origin=$(jsonfilter -s "$updates"  -e "$.result[@.update_id=$update_id].message.chat.id")
+			msg_id=$(jsonfilter -s "$updates"  -e "$.result[@.update_id=$update_id].message.message_id")
+			command=$(jsonfilter -s "$updates" -e "$.result[@.update_id=$update_id].message.text")
+			is_a_cmd=$(jsonfilter -s "$updates" -e "$.result[@.update_id=$update_id].message.entities[*].type")
+			query_ans=$(jsonfilter -s "$updates" -e "$.result[@.update_id=$update_id].callback_query.id")
+			origin_ans=$(jsonfilter -s "$updates"  -e "$.result[@.update_id=$update_id].callback_query.message.chat.id")
+
+			if [[ "$origin" != "$my_chat_id" && "$origin_ans" != "$my_chat_id" ]];then
+				curl -k -s -X POST $api/sendMessage -d reply_to_message_id=$msg_id -d chat_id=$origin -d parse_mode=Markdown --data-urlencode text="This is a Private bot." 
+				curl -k -s -X POST $api/leaveChat -d chat_id=$origin  
+			else
+
+				/root/typing > /tmp/typing.log &
+				#curl -k -X POST $api/sendChatAction -d "chat_id=$my_chat_id" -d "action=typing" 
+				if [ $(echo "$is_a_cmd" | grep "bot_command" -q; echo $?) == 0 ]; then 
+					cmd=$(echo $command |  awk '{print $1}')
+					prms=$(echo $command | awk '{$1=""; print $0}')
+					parms=${prms//[\"\&\;\\\>\<\|]/}			
+					if [ -f "${plugins}$cmd" ]; then
+						cd ${plugins}
+						result=$("./$cmd" $parms)
+						curl -k -s -X POST $api/sendMessage -d chat_id=$origin -d parse_mode=Markdown --data-urlencode text="$result" 
+						cd  ${path}
+					else
+						curl -k -s -X POST $api/sendMessage -d chat_id=$origin -d parse_mode=Markdown --data-urlencode text="Command *${cmd}* not found!" 
+					fi
+				elif [ "$query_ans" != "" ]; then
+					msg_id_ans=$(jsonfilter -s "$updates"  -e "$.result[@.update_id=$update_id].callback_query.message.message_id")
+					final_cmd=$(jsonfilter -s "$updates"  -e "$.result[@.update_id=$update_id].callback_query.data")
+					fcmd=$(echo $final_cmd |  awk -F "\|" '{printf $1}')
+					fprms=$(echo $final_cmd | awk -F "\|" '{printf $2}')
+					parameter=${fprms//[\&\;\\\>\<\|]/}
+					if [ -f "${actions}/$fcmd" ]; then
+						cd ${actions}
+						result=$(IFS="\^" ; "./$fcmd" ${parameter})
+						remove=$(echo $result | awk -F "\|" '{print $1}')
+						msg=$(echo $result | awk -F "\|" '{print $2}')
+						curl -k -s -X POST $api/answerCallbackQuery -d chat_id=$origin_ans -d callback_query_id=$query_ans -d text="${msg}" 
+						if [ "$remove" == "1" ]; then
+							curl -k -s -X POST $api/editMessageText -d chat_id=$origin_ans -d message_id=$msg_id_ans -d text="${msg}" 
+						fi
+						cd  ${path}
+					else
+						curl -k -s -X POST $api/sendMessage -d chat_id=$origin_ans -d parse_mode=Markdown --data-urlencode text="Command Action *${fcmd}* not found!" 
+					fi
+				else
+					curl -k -s -X POST $api/sendMessage -d reply_to_message_id=$msg_id -d chat_id=$origin -d parse_mode=Markdown --data-urlencode text="${command_not_found}" 
+				fi
+				kill $(ps | grep -v grep | grep typing | awk '{print $1}')
+			fi
+		done
+	
+		if [ -n "$update_ids" ]; then
+			echo "offset=$update_id" > /tmp/bot_vars.sh
+	  	fi
+	fi
+	sleep 1
+done&
+} | (logger -t "telegram_bot" -p daemon.info)&

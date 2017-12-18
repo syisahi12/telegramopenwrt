@@ -1,0 +1,2 @@
+version=$(cat /etc/banner | grep , | cut -d ',' -f 2)
+echo "OpenWRT Version${version}"

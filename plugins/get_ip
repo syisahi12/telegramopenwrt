@@ -1,0 +1,33 @@
+#!/bin/sh
+
+ip=$(. /lib/functions/network.sh; network_get_ipaddr ip wan; echo $ip)
+
+. /root/variables > /dev/null 2>&1
+if [ -z "$current_ip" ]
+then
+      current_ip=$ip
+      echo "current_ip=\"$ip\"" >> /root/variables
+      . /root/variables > /dev/null 2>&1
+else
+      if [ "$ip" != "$current_ip" ]
+      then
+	  previous_ip=""
+          echo "previous_ip=\"$current_ip\"" >> /root/variables
+	  . /root/variables > /dev/null 2>&1
+          echo "current_ip=\"$ip\"" >> /root/variables
+	  . /root/variables > /dev/null 2>&1
+	  sed -i '12d' /root/variables
+	  sed -i '12d' /root/variables
+	  . /root/variables > /dev/null 2>&1
+      fi
+fi
+
+uptime=$(/root/plugins/get_uptime)
+usage=$(/root/plugins/get_cpu)
+date=$(/root/plugins/get_date)
+ram=$(free | awk '/Mem/{printf("*Free Memory:* %.2f%"), ($2-$3)/1024} /Mem/{printf(" MB, %.2f%%\n"), 100-$3/$2*100}')
+if [ ! -z "$previous_ip" ]; then
+previous="*Previous UniFi IP:* $previous_ip"
+fi
+
+echo "${model}"$'\n'"${version}"$'\n'"${date}"$'\n\n''_'"PPPoE WAN Info"'_'$'\n'"*Current UniFi IP:* ${current_ip}"$'\n'"$previous"$'\n'"*Uptime:* ${uptime}"$'\n'"$ram"$'\n'"*CPU Load:* ${usage}"

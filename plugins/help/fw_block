@@ -1,0 +1,1 @@
+*Arg* Block given hostname with a deny rule in firewall, if time is appended to command hostname will be blocked for mentioned period.

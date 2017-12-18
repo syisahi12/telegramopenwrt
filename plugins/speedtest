@@ -1,0 +1,15 @@
+source /root/variables
+
+result=$(speedtest --server 10327 --simple)
+ping=$(echo "$result" | grep -i Ping | cut -d ':' -f 2)
+download=$(echo "$result" | grep -i Download | cut -d ':' -f 2)
+upload=$(echo "$result" | grep -i Upload | cut -d ':' -f 2)
+
+echo "${model}"
+echo "${version}"
+./get_date
+printf "\n"
+
+echo "*Ping:*$ping"
+echo "*Download:*$download"
+echo "*Upload:*$upload"

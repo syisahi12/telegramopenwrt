@@ -1,0 +1,17 @@
+#!/bin/sh
+
+parms="$1"
+
+source /root/variables
+
+echo "${model}"
+echo "${version}"
+./get_date
+printf "\n"
+echo "*DHCP Leases*"
+
+if [ "$parms" != "" ]; then
+	cat /tmp/dhcp.leases | grep "$parms" | awk '{gsub("*","\\*"); gsub( "_","\\_" );  printf "Date Acquired: " ; system("date \"+%d/%m/%Y %T %Z\" -d \"@$(( "$1" - 43200))\"");printf "Device Name: " $4 "\nIP Assigned: " $3 "\nMAC Address: " toupper($2)"\nDevice State: "; system("./get_ping "$4" 1") ;printf "\n\n" }'
+else
+	cat /tmp/dhcp.leases | awk '{gsub("*","\\*"); gsub( "_","\\_" ); printf "_"$4"_";printf "\n*Date Acquired:* " ; system("date \"+%d/%m/%Y %T %Z\" -d \"@$(( "$1" - 43200))\"");printf "*IP Assigned:* " $3 "\n*MAC Address:* " toupper($2)"\n*State:* "; system("./get_ping "$4" 1") ;printf "\n\n" }'
+fi
