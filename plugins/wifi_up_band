@@ -1,0 +1,5 @@
+#/bin/sh
+
+command="$1"
+uci set wireless.$command.disabled=0
+uci commit wireless && wifi
