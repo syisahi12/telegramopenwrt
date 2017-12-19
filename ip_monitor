@@ -32,7 +32,7 @@ do
                         . /root/variables > /dev/null 2>&1
                         EndDate=""
                         downtime=""
-                  if [ -z "$EndDate" ] && [ ! -z "$startdate" ]; then
+                  if [ -z "$EndDate" ] && [ ! -z "$StartDate" ]; then
                         EndDate=$(date "+%F %T")
                         echo "EndDate=\"$EndDate\"" >> /root/variables
                         source /root/variables > /dev/null 2>&1

@@ -9,5 +9,5 @@ From='[MAIL FROM]'
 To='[MAIL TO]'
 model="XiaoMi MiWiFi 3G"
 version=$(/root/plugins/get_version)
-previous_ip="115.133.226.155"
-current_ip="175.144.165.237"
+previous_ip="118.100.95.200"
+current_ip="118.100.95.223"
