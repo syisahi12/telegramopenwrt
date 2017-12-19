@@ -29,19 +29,23 @@ Finally,
 #### init.d directory
 
 Contains the necessary files for the scripts to be started at the router boot, just move them to the /etc/init.d/ of the router and run:
+```
 /etc/init.d/lanports enable
 /etc/init.d/telegram_bot enable
 /etc/init.d/ip_monitor enable
 /etc/init.d/hosts_scan enable
+```
 
 Hint: Just disable any file other than /etc/init.d/telegram_bot you don't like by not copying them to /etc/init.d or running `/etc/init.d/${filename} disable` to disable them, it's up to you.
 
 And then:
 
+```
 /etc/init.d/lanports start
 /etc/init.d/telegram_bot start
 /etc/init.d/ip_monitor start
 /etc/init.d/hosts_scan start
+```
 
 And you're good to go!
 
