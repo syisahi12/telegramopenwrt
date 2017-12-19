@@ -34,26 +34,26 @@ logread -f |while read line; do
 		date=$(echo "${line}" | grep -oE "^[a-zA-Z]+[[:space:]]+[a-zA-z]+[[:space:]]+[0-9]+[[:space:]]+[0-9:]+ [0-9]+")
 		ip=$(echo "${dados}" | cut -d ' ' -f 1)
 		macaddr=$(echo "${dados}" | cut -d ' ' -f 2)
-		macaddr=$(echo $macaddr | awk '{print toupper($0)}')
 		date=$(/root/plugins/get_date)
 		for item in ${macaddr2}
 		do
 			if [ "$item" == "$macaddr" ]; then
-				connection=" has connected to *2.4 GHz* WiFi on this router"
+				connection="has connected to *2.4 GHz* WiFi on this router"
 			fi 
 		done
 		for item in ${macaddr3}
                 do
                         if [ "$item" == "$macaddr" ]; then
-                                connection=" has connected to *5.0 GHz* WiFi on this router"
+                                connection="has connected to *5.0 GHz* WiFi on this router"
                         fi
                 done
+		macaddr=$(echo $macaddr | awk '{print toupper($0)}')
 		name=$(echo "${dados}" | cut -d ' ' -f 3 | awk '{gsub("*","\*"); gsub( "_","\_" );  printf $0 }')
 		#echo "From: ${From}"$'\n'"To: ${To}"$'\n'"Subject: [openwrt] DHCP-ACK ${name} has ${ip}"$'\n\n'"Time: ${date}"$'\n'"IP Assigned: ${ip}"$'\n'"MAC Address: ${macaddr}" | ssmtp "${Sender}"
 		if [ -z "$connection" ]; then
 			connection=" has connected to your other router"
 		fi
-		telegram=$(echo "${model}"$'\n'"${version}"$'\n'"${date}"$'\n\n''_'"Device Connection Monitor"'_'$'\n'"${connection}"$'\n'"*Time Connected:* ${date}"$'\n'"*IP Assigned:* ${ip}"$'\n'"*Mac Address:* ${macaddr}")
+		telegram=$(echo "${model}"$'\n'"${version}"$'\n'"${date}"$'\n\n''_'"Device Connection Monitor"'_'$'\n'"${name} ${connection}"$'\n'"*Time Connected:* ${date}"$'\n'"*IP Assigned:* ${ip}"$'\n'"*Mac Address:* ${macaddr}")
 		curl -k -s -X POST $api/sendMessage -d chat_id=$my_chat_id -d parse_mode=Markdown --data-urlencode text="$telegram" &>/tmp/telegram.log
 		#echo $telegram >>/tmp/log/lanports.log
 		#/root/telebot "$telegram"
