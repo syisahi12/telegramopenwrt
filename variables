@@ -1,4 +1,3 @@
-
 key='[PUT YOUR BOT KEY HERE]'
 api="https://api.telegram.org/bot$key"
 my_chat_id='[PUT ID OF THE CHAT THAT YOU START WITH BOT]'
