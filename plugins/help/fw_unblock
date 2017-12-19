@@ -1,1 +1,1 @@
-*Arg* Remove given hostname from being denied in firewall, if no hostname is provided, all rules blocked by this bot will be unblocked.
+*O Arg* Remove given hostname from being denied in firewall, if no hostname is provided, all rules blocked by this bot will be unblocked.
