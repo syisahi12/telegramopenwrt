@@ -1,13 +1,12 @@
-key='426294861:AAEPnF2HyRrwnJXyLQDEeBCJ4x_6GytbQ1Y'
+
+key='[PUT YOUR BOT KEY HERE]'
 api="https://api.telegram.org/bot$key"
-my_chat_id='241263558'
+my_chat_id='[PUT ID OF THE CHAT THAT YOU START WITH BOT]'
 header_auth='[HEADER AUTH]'
-ipaddr='[CAMERA IP OR HOSTNAME]' 
+ipaddr='[CAMERA IP OR HOSTNAME]'
 user='[CAMERA USER]'
 passwd='[CAMERA PASSWD]'
 From='[MAIL FROM]'
 To='[MAIL TO]'
-model="XiaoMi MiWiFi 3G"
+model="[PUT YOUR MODEL HERE]"
 version=$(/root/plugins/get_version)
-previous_ip="124.13.237.10"
-current_ip="124.13.237.56"
