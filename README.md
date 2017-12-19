@@ -30,6 +30,7 @@ curl -s -k -X GET https://api.telegram.org/bot<YOUR BOT ID>/getUpdates | grep -o
 ```
 
 Get the number and replace "[PUT ID OF THE CHAT THAT YOU START WITH BOT]" in the variables file.
+Also replace "[PUT YOUR MODEL HERE]" in the same file with your router's name
 
 Finally,
 
