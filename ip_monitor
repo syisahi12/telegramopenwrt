@@ -12,64 +12,85 @@ do
   ip=$(. /lib/functions/network.sh; network_get_ipaddr ip wan; echo $ip)
 
   . /root/variables > /dev/null 2>&1
-  if [ ! -z "$ip" ]
-  then
-  if [ -z "$current_ip" ]
-  then
-        current_ip=$ip
-        echo "current_ip=\"$ip\"" >> /root/variables
-        . /root/variables > /dev/null 2>&1
-  else
-        if [ "$ip" != "$current_ip" ]
-        then
-          previous_ip=""
-                echo "previous_ip=\"$current_ip\"" >> /root/variables
-          . /root/variables > /dev/null 2>&1
-                echo "current_ip=\"$ip\"" >> /root/variables
-          . /root/variables > /dev/null 2>&1
-          sed -i '12d' /root/variables
-          sed -i '12d' /root/variables
-          . /root/variables > /dev/null 2>&1
-	  EndDate=""
-	  downtime=""
-	  if [ -z "$EndDate" ]; then
-	        EndDate=$(date "+%F %T")
-		echo "EndDate=\"$EndDate\"" >> /root/variables
-		source /root/variables > /dev/null 2>&1
-		downtime=$(($(date -d "$EndDate" '+%s') - $(date -d "$StartDate" '+%s')))
-		echo "downtime=\"$downtime\"" >> /root/variables
-	        source /root/variables > /dev/null 2>&1
-          fi
-          has_offer=1
-        fi
-  fi
+      if [ ! -z "$ip" ]
+      then
+            if [ -z "$current_ip" ]
+            then
+                  current_ip=$ip
+                  echo "current_ip=\"$ip\"" >> /root/variables
+                  . /root/variables > /dev/null 2>&1
+            else
+                  if [ "$ip" != "$current_ip" ]
+                  then
+                        previous_ip=""
+                              echo "previous_ip=\"$current_ip\"" >> /root/variables
+                        . /root/variables > /dev/null 2>&1
+                              echo "current_ip=\"$ip\"" >> /root/variables
+                        . /root/variables > /dev/null 2>&1
+                        sed -i '12d' /root/variables
+                        sed -i '12d' /root/variables
+                        . /root/variables > /dev/null 2>&1
+                        EndDate=""
+                        downtime=""
+                  if [ -z "$EndDate" ] && [ ! -z "$startdate" ]; then
+                        EndDate=$(date "+%F %T")
+                        echo "EndDate=\"$EndDate\"" >> /root/variables
+                        source /root/variables > /dev/null 2>&1
+                        downtime=$(($(date -d "$EndDate" '+%s') - $(date -d "$StartDate" '+%s')))
+                        echo "downtime=\"$downtime\"" >> /root/variables
+                        source /root/variables > /dev/null 2>&1
+                  fi
+                  has_offer=1
+            fi
+      fi
 
-  if [ $has_offer == 1 ] && [ ! -z "$current_ip" ] && [ ! -z "$StartDate" ]; then
-    sleep 1
-    uptime=$(/root/plugins/get_uptime)
-    usage=$(/root/plugins/get_cpu)
-    date=$(/root/plugins/get_date)
-    timezone=$(date "+%Z")
-    zonename=$(cat /etc/config/system | grep zonename | cut -d ' ' -f 3)
-    downtimefinal=$(/root/plugins/calc_secs "$downtime")
-    condition="Your UniFi has reconnected"
-    ram=$(free | awk '/Mem/{printf("*Free Memory:* %.2f%"), ($2-$3)/1024} /Mem/{printf(" MB, %.2f%%\n"), 100-$3/$2*100}')
-    if [ ! -z "$previous_ip" ]; then
-    previous="*Previous UniFi IP:* $previous_ip"
-    fi
-    telegram=$(echo "XiaoMi MiWiFi 3G"$'\n'"${version}"$'\n'"${date}"$'\n\n''_'"PPPoE WAN Monitor"'_'" - ${condition}"$'\n'"*Recent Downtime:* ${downtimefinal} (${StartDate} to ${EndDate} Timezone: ${timezone} -> ${zonename})"$'\n'"*Current UniFi IP:* ${current_ip}"$'\n'"*Previous UniFi IP:* ${previous_ip}"$'\n'"*Uptime:* ${uptime}"$'\n'"$ram"$'\n'"*CPU Load:* ${usage}")
-    curl -k -s -X POST $api/sendMessage -d chat_id=$my_chat_id -d parse_mode=Markdown --data-urlencode text="$telegram" &>/tmp/telegram.log
-    #/root/telebot "$telegram"
-    /etc/init.d/telegram_bot stop > /dev/null 2>&1
-    pkill -f -9 telegram
-    /etc/init.d/telegram_bot start
-    has_offer=0
-    sed -i '12d' /root/variables
-    sed -i '14d' /root/variables
-    sed -i '14d' /root/variables
-    StartDate=""
-    source /root/variables > /dev/null 2>&1
-  fi
+      if [ $has_offer == 1 ] && [ ! -z "$current_ip" ]; then
+      sleep 1
+      uptime=$(/root/plugins/get_uptime)
+      usage=$(/root/plugins/get_cpu)
+      date=$(/root/plugins/get_date)
+      if [ ! -z "$downtime" ] && [ ! -z "$EndDate" ] && [ ! -z "$StartDate" ]; then
+            timezone=$(date "+%Z")
+            zonename=$(cat /etc/config/system | grep zonename | cut -d ' ' -f 3)
+            downtimefinal=$(/root/plugins/calc_secs "$downtime")
+            downtimestring="*Recent Downtime:* ${downtimefinal} (${StartDate} to ${EndDate} Timezone: ${timezone} -> ${zonename})"
+      fi
+
+      if [ -z "$condition" ]; then
+            if [ ! -z "$downtimefinal" ]; then
+                  condition="Your UniFi has reconnected"
+            else
+                  condition="Your router has just booted"
+            fi
+      fi
+
+      ram=$(free | awk '/Mem/{printf("*Free Memory:* %.2f%"), ($2-$3)/1024} /Mem/{printf(" MB, %.2f%%\n"), 100-$3/$2*100}')
+
+      if [ ! -z "$previous_ip" ]; then
+      previous="*Previous UniFi IP:* $previous_ip"
+      fi
+      
+      telegram=$(echo "XiaoMi MiWiFi 3G"$'\n'"${version}"$'\n'"${date}"$'\n\n''_'"PPPoE WAN Monitor"'_'" - ${condition}"$'\n'"${downtimestring}"$'\n'"*Current UniFi IP:* ${current_ip}"$'\n'"*Previous UniFi IP:* ${previous_ip}"$'\n'"*Uptime:* ${uptime}"$'\n'"$ram"$'\n'"*CPU Load:* ${usage}")
+      curl -k -s -X POST $api/sendMessage -d chat_id=$my_chat_id -d parse_mode=Markdown --data-urlencode text="$telegram" &>/tmp/telegram.log
+      #/root/telebot "$telegram"
+      /etc/init.d/telegram_bot stop > /dev/null 2>&1
+      pkill -f -9 telegram
+      /etc/init.d/telegram_bot start
+      condition=""
+      source /root/variables > /dev/null 2>&1
+      has_offer=0
+      if [ ! -z "$condition" ]; then
+            sed -i '12d' /root/variables
+      else
+            if [ ! -z "$downtime" ] && [ ! -z "$EndDate" ] && [ ! -z "$StartDate" ]; then
+                  sed -i '12d' /root/variables
+                  sed -i '14d' /root/variables
+                  sed -i '14d' /root/variables 
+            fi
+      fi
+      StartDate=""
+      source /root/variables > /dev/null 2>&1
+      fi
   else 
 	if [ -z "$StartDate" ]; then
 	StartDate=$(date "+%F %T")
@@ -80,4 +101,3 @@ do
   fi
   sleep 1
 done&
-
