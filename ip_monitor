@@ -62,6 +62,7 @@ do
             else
                   condition="Your router has just booted"
             fi
+	    downtimestring="*Recent Downtime:* N.A."
       fi
 
       ram=$(free | awk '/Mem/{printf("*Free Memory:* %.2f%"), ($2-$3)/1024} /Mem/{printf(" MB, %.2f%%\n"), 100-$3/$2*100}')
