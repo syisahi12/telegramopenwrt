@@ -18,7 +18,9 @@ With the bot created, you need to replace "[PUT YOUR BOT KEY HERE]" in variables
 Second, you need to send an initial message (not running the commands) to your bot in Telegram App.
 After you send the message, run command below on your OpenWRT router in SSH client of your choice:
 
-``` curl -s -k -X GET https://api.telegram.org/bot<YOUR BOT ID>/getUpdates | grep -oE "\"id\":[[:digit:]]+" | head -n1 | awk -F : '{print $2}'```
+``` 
+curl -s -k -X GET https://api.telegram.org/bot<YOUR BOT ID>/getUpdates | grep -oE "\"id\":[[:digit:]]+" | head -n1 | awk -F : '{print $2}'
+```
 
 Get the number and replace "[PUT ID OF THE CHAT THAT YOU START WITH BOT]" in the variables file.
 
