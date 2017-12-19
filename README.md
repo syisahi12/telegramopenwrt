@@ -4,10 +4,17 @@ This is a set of scripts with a plugins API written in bash, you can use it to m
 
 ### How its works ?
 
-First of all, clone the repo into your router's /root directory. 
+First of all, clone the repo (the unifi branch) into your router's /root directory. 
 In case you're wondering how to install GitHub on your router, run:
 ```opkg update
    opkg install git git-http ca-bundle
+```
+
+and to clone this repo:
+
+```
+cd /root
+git clone https://github.com/jianminglok/telegramopenwrt.git -b unifi ./
 ```
 
 Next, Create a bot for yourself! Refer to guides on Google etc. (Hint: It's within the Telegram app)
