@@ -49,6 +49,7 @@ do
       uptime=$(/root/plugins/get_uptime)
       usage=$(/root/plugins/get_cpu)
       date=$(/root/plugins/get_date)
+      downtimestring="*Recent Downtime:* N.A."
       if [ ! -z "$downtime" ] && [ ! -z "$EndDate" ] && [ ! -z "$StartDate" ]; then
             timezone=$(date "+%Z")
             zonename=$(cat /etc/config/system | grep zonename | cut -d ' ' -f 3)
@@ -62,7 +63,6 @@ do
             else
                   condition="Your router has just booted"
             fi
-	    downtimestring="*Recent Downtime:* N.A."
       fi
 
       ram=$(free | awk '/Mem/{printf("*Free Memory:* %.2f%"), ($2-$3)/1024} /Mem/{printf(" MB, %.2f%%\n"), 100-$3/$2*100}')
