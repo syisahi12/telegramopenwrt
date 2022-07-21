@@ -3,7 +3,7 @@
 This is a set of scripts with a plugins API written in bash, you can use it to manage and get informations on OpenWRT Routers.
 
 ### Speedtest
-Instead of using speedtest by ookla you neet to install speedtest-cli using pip
+Instead of using speedtest by ookla you need to install speedtest-cli using pip
 
 ### How its works ?
 
