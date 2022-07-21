@@ -2,6 +2,9 @@
 
 This is a set of scripts with a plugins API written in bash, you can use it to manage and get informations on OpenWRT Routers.
 
+### Speedtest
+Instead of using speedtest by ookla you neet to install speedtest-cli using pip
+
 ### How its works ?
 
 First of all, clone the repo (the unifi branch) into your router's /root directory. 
